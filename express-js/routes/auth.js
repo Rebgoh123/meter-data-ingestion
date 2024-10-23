@@ -147,32 +147,30 @@ router.post('/logout', function(req, res, next) {
  * successfully created, the user is logged in.
  */
 router.post('/signup', function(req, res, next) {
-    console.log(req.body);
+    // Generate a random salt
+    const salt = crypto.randomBytes(16)
+    // Hash the password synchronously
+    var hashedPassword = crypto.pbkdf2Sync(req.body.password, salt, 310000, 32, 'sha256');
 
-    const salt = crypto.randomBytes(16).toString('hex'); // Convert salt to hex
-    crypto.pbkdf2(req.body.password, salt, 310000, 32, 'sha256', function(err, hashedPassword) {
+    // Insert the new user into the database
+    db.query('INSERT IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [
+        req.body.username,
+        hashedPassword,
+        salt
+    ], function(err, result) {
         if (err) {
-            return next(err); // Handle any errors during hashing
+            console.error('error inserting user:', err);
+            return next(err); // Handle any errors during the query
         }
 
-        db.query('INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [
-            req.body.username,
-            hashedPassword.toString('hex'), // Convert hashed password to hex
-            salt
-        ], function(err, result) {
-            if (err) {
-                return next(err); // Handle any errors during the query
+        // Respond with success message
+        res.json({
+            success: true,
+            message: 'Created successfully',
+            result: {
+                id: result.insertId, // Correctly retrieve the last inserted ID
+                user: req.body.username,
             }
-
-            // Use result.insertId for the last inserted ID
-            res.json({
-                success: true,
-                message: 'Created successfully',
-                result: {
-                    id: result.insertId, // Correctly retrieve the last inserted ID
-                    user: req.body.username,
-                }
-            });
         });
     });
 });
