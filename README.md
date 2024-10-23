@@ -15,4 +15,4 @@ A boilerplate for a simple authentication system using Express.js for the backen
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/simple-auth-vite-express.git
+   git clone https://github.com/Rebgoh123/simple-auth-vite-express.git my-auth
