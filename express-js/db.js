@@ -36,17 +36,19 @@ db.query(`
     console.error('error creating users table:', err);
   }
 });
-// Create Todo table
+// Create MeterReading table
 db.query(`
-  CREATE TABLE IF NOT EXISTS todos (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    owner_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    completed TINYINT(1)
+  CREATE TABLE IF NOT EXISTS meter_readings (
+        id CHAR(36) DEFAULT (UUID()) NOT NULL,
+        nmi varchar(10) NOT NULL,
+        timestamp TIMESTAMP NULL NULL,
+        consumption DECIMAL(10,5) NOT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY meter_readings_unique (nmi, timestamp)
   );
 `, function(err, results, fields) {
   if (err) {
-    console.error('error creating todos table:', err);
+    console.error('error creating meter_readings table:', err);
   }
 });
 

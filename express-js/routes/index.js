@@ -1,30 +1,31 @@
 var express = require('express');
 var db = require('../db');
+const crypto = require("crypto");
 
 const validateSessionKey = (req, res, next) => {
-  const sessionKey = req.headers['x-session-key'];
-  if (!sessionKey || sessionKey !== req.sessionID) {
-    return res.status(401).json({ error: 'Invalid or missing session key' });
+  // Ensure session exists
+  if (!req.sessionID || !req.session) {
+    return res.status(401).json({ error: 'Unauthorized: Session is missing or expired' });
   }
-  next();
+
+  next(); // Move to next middleware if session is valid
 };
 
-function fetchTodos(req, res, next) {
-  db.query('SELECT * FROM todos WHERE owner_id = ?', [
-    req.user.id
+
+function fetchMeterReading(req, res, next) {
+  db.query('SELECT * FROM meter_readings', [
+
   ], function(err, rows) {
     if (err) { return next(err); }
-
-    var todos = rows.map(function(row) {
+    var meterReadings = rows.map(function(row) {
       return {
         id: row.id,
-        title: row.title,
-        completed: row.completed === 1 ? true : false,
+        nmi: row.nmi,
+        timestamp: row.timestamp,
+        consumption: row.consumption,
       }
     });
-    res.locals.todos = todos;
-    res.locals.activeCount = todos.filter(function(todo) { return !todo.completed; }).length;
-    res.locals.completedCount = todos.length - res.locals.activeCount;
+    res.meterReadings = meterReadings;
     next();
   });
 }
@@ -32,20 +33,46 @@ function fetchTodos(req, res, next) {
 var router = express.Router();
 
 /* GET home page. */
-router.get('/todos',
+router.get('/meter-readings', fetchMeterReading,
     validateSessionKey,
     function(req, res, next) {
-      if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
       next();
     },
-    fetchTodos,
+    fetchMeterReading,
     function(req, res, next) {
       res.json({
-        user: req.user,
-        todos: res.locals.todos
+        meterReadings: res.meterReadings
       });
     }
 );
+
+router.post('/meter-readings', function(req, res, next) {
+  const meterReadings = req.body; // Expecting an array of readings
+
+  if (!Array.isArray(meterReadings) || meterReadings.length === 0) {
+    return res.status(400).json({ error: "Invalid input: Must be an array of readings." });
+  }
+
+  // Prepare values for bulk insert
+  const values = meterReadings.map(reading => [reading.nmi, reading.timestamp, reading.consumption]);
+
+  // SQL query for bulk insert
+  const sql = `
+        INSERT IGNORE INTO meter_readings (nmi, timestamp, consumption)
+        VALUES ?
+    `;
+
+  // Execute bulk insert
+  db.query(sql, [values], function(err, result) {
+    if (err) {
+      console.error('Error inserting meter readings:', err);
+      return next(err);
+    }
+    res.json({
+      success: true,
+      message: 'Meter readings inserted successfully',
+      insertedRows: result.affectedRows
+    });
+  });
+});
 module.exports = router;

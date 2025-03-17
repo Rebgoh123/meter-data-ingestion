@@ -7,8 +7,8 @@ import {useAuth} from '../../hoc/AuthContext'
 import {PrivateRoutes} from '../../hoc/PrivateRoutes'
 import AvatarImage from '../../assets/avatar.jpg'
 import LogoImage from '../../assets/logo.png'
-import {setUserSessionToken} from "../../localstorage/index.jsx";
 import {useSnackBar} from "../../hoc/SnackbarHandler/index.jsx";
+import {AppTypography} from "./style.jsx";
 
 
 function BaseApp() {
@@ -43,21 +43,8 @@ function BaseApp() {
                 <AppBar position="static" color={'default'}>
                     <Toolbar>
                         <img src={LogoImage} width={50}/>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{
-                                color: '#6b6b6b',
-                                mr: 2,
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                textDecoration: 'none',
-                                flexGrow: 1
-                            }}
-                        >
-                           THEMERRYBALLOON
-                        </Typography>
+                        <AppTypography>Energy
+                        </AppTypography>
                         <Box >
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

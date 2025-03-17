@@ -16,7 +16,17 @@ var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 
 var app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:5173', // ✅ Ensure this matches frontend URL
+  credentials: true, // ✅ MUST be true to send cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

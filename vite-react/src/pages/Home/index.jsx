@@ -1,39 +1,43 @@
-import React from 'react';
-import {Typography, Button, CardContent, CardActions, Card, Grid} from '@mui/material';
-import { Link } from 'react-router-dom';
-import SampleComponent from "../../component/SampleComponent/index.jsx";
+import { Typography, Button, CardContent, CardActions, Grid, Box } from "@mui/material";
+import { Link } from "react-router-dom";
+import {CardLabel, HomeCard} from "./style.jsx";
 
-const CustomCard = ({ title, href }) => (
-    <Card variant="outlined">
+const AppModules = [
+    {
+        title: "Meter Reading",
+        desc: "View and process meter readings efficiently.",
+        href: "/meter-reading"
+    }
+];
+
+const CustomCard = ({ title, href, desc }) => (
+    <HomeCard variant="outlined">
         <CardContent>
-            <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+            <CardLabel variant="h6" gutterBottom color="primary.main" >
                 {title}
-            </Typography>
-            <Typography variant="subtitle" component="div">
-                Sample desc
+            </CardLabel>
+            <Typography variant="body2" color="text.secondary">
+                {desc}
             </Typography>
         </CardContent>
         <CardActions>
-            <Button size="small" component={Link} to={href}>
+            <Button size="small" variant="contained" color="primary" component={Link} to={href} sx={{ ml: 1 }}>
                 Learn More
             </Button>
         </CardActions>
-    </Card>
+    </HomeCard>
 );
 
-function Home() {
+export const HomePage = () => {
     return (
-        <div>
-            <Grid container={true} spacing={2} >
-                <Grid item xs={12} md={3}>
-                    <CustomCard title={'Module1'} href={'/about'} />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <CustomCard title={'Module2'} href={'/about'} />
-                </Grid>
+        <Box sx={{ flexGrow: 1, p: 4 }}>
+            <Grid container spacing={3} justifyContent="flex start">
+                {AppModules.map(({ title, href, desc }, index) => (
+                    <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                        <CustomCard title={title} href={href} desc={desc} />
+                    </Grid>
+                ))}
             </Grid>
-        </div>
+        </Box>
     );
 }
-
-export default Home;

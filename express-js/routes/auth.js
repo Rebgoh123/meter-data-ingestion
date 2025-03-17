@@ -94,16 +94,20 @@ router.post('/login', passport.authenticate('local', {
       failWithError: true
     }),
     function(req, res) {
-      const sessionToken = req.sessionID; // Get session ID
+        req.session.save(err => {
+            if (err) {
+                return res.status(500).json({ message: 'Session saving failed' });
+            }
 
-      res.json({
-        success: true,
-        message: 'Authenticated successfully',
-        result: {
-            sessionToken: sessionToken,
-            user: req.user.username,
-        }
-      });
+            res.json({
+                success: true,
+                message: 'Authenticated successfully',
+                result: {
+                    sessionToken: req.sessionID, // Return session ID for debugging
+                    user: req.user.username
+                }
+            });
+        });
     },
     function(err, req, res) {
       if (err.name === 'InvalidPasswordError') {

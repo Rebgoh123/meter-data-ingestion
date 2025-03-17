@@ -17,7 +17,7 @@ import {useNavigate} from "react-router-dom";
 import {useRegister} from "./_hooks/useRegister.jsx";
 import {useSnackBar} from "../../hoc/SnackbarHandler/index.jsx";
 
-function Login() {
+export const Login = () => {
     const {user, setUser} = useAuth()
     const navigate = useNavigate()
     const [tab, setTab] = useState(0);
@@ -188,5 +188,3 @@ function Login() {
 
     );
 }
-
-export default Login;
