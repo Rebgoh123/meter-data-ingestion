@@ -24,7 +24,6 @@ export function useLogin() {
         (formDetails) => login(formDetails),
         {
             onSuccess: (result) => {
-                console.log(result)
                 setResult(result.result)
                 setIsSuccess(true)
                 setSnackBar({

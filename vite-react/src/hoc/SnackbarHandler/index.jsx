@@ -24,7 +24,7 @@ export const SnackbarHandler = ({ children }) => {
         if (snackbar.open) {
             const timer = setTimeout(() => {
                 setSnackBar((prevState) => ({ ...prevState, open: false }));
-            }, 3000); // Auto-hide duration
+            }, 3000); // auto-hide duration
             return () => clearTimeout(timer);
         }
     }, [snackbar.open]);

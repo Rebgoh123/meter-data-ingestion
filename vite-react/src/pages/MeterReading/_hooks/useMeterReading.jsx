@@ -8,7 +8,6 @@ const fetchMeterReadings = async () => {
 };
 
 const postMeterReading = async (newReading) => {
-    console.log(`newReading`, newReading)
     const { data } = await BaseApi.post('meter-readings', newReading);  // Adjust API endpoint
     return data;
 };
@@ -28,7 +27,7 @@ export function useMeterReadings() {
                     type: 'error',
                 });
             },
-            staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+            staleTime: 5 * 60 * 1000, // cache for 5 minutes
         }
     );
 

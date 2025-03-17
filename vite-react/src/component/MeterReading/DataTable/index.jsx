@@ -2,7 +2,7 @@ import React, {useState, useMemo} from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from "dayjs";
 
-import {useMeterReadings} from "./_hooks/useMeterReading.jsx";
+import {useMeterReadings} from "../../../pages/MeterReading/_hooks/useMeterReading.jsx";
 import {DataGridPaper} from "./style.jsx";
 
 export const DataTable = () => {
@@ -39,9 +39,9 @@ export const DataTable = () => {
                     pageSizeOptions={[5, 10, 20, 50]}
                     pagination
                     paginationMode="server"
+                    rowCount={meterReadings?.meterReadings?.length ?? 0}
                     paginationModel={paginationModel}
                     onPaginationModelChange={setPaginationModel}
-                    rowCount={meterReadings?.meterReadings?.length}
                     sx={{ border: 0 }}
                 />
             </DataGridPaper>

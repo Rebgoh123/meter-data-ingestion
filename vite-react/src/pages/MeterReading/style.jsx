@@ -1,8 +1,8 @@
 import { styled } from "@mui/material/styles";
-import { Fab, Paper, Box } from "@mui/material";
+import { Box } from "@mui/material";
 
-export const DataGridPaper = styled(Paper)(() => ({
-    width: '100%',
-    height: 'calc(100vh - 220px)',
-    padding: '10px'
+export const StyledBox = styled(Box)(() => ({
+    p: 3,
+    pt: 0,
+    position: 'relative'
 }));

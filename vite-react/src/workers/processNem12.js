@@ -11,10 +11,10 @@ self.onmessage = function (e) {
     for (const line of lines) {
         const parts = line.split(',');
 
-        //To get the NMI second value of `200 record`
+        //to get the NMI second value of `200 record`
         if (parts[0] === "200") {
-            nmiValue = parts[1]; // Get the NMI
-            interval = parseInt(parts[8]) // Get the interval
+            nmiValue = parts[1]; // get the NMI
+            interval = parseInt(parts[8]) // get the interval
         }
         else if (parts[0] === "300" && nmiValue) {
             baseDate = dayjs(parts[1], 'YYYYMMDD').startOf('day');
@@ -27,10 +27,10 @@ self.onmessage = function (e) {
                     consumption: value
                 });
 
-                // ✅ Send data in batches
+                // send data in batches
                 if (parsedRows.length >= 1000) {
                     self.postMessage(parsedRows);
-                    parsedRows = []; // Reset after sending batch
+                    parsedRows = []; // reset
                 }
             });
         }

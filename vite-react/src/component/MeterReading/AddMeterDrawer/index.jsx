@@ -6,8 +6,8 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
-import {useMeterReadings} from "./_hooks/useMeterReading.jsx";
-import processNem12Worker from '../../workers/processNem12?worker';
+import processNem12Worker from '../../../workers/processNem12?worker';
+import {useMeterReadings} from "../../../pages/MeterReading/_hooks/useMeterReading.jsx";
 import {DrawerBox, StyledFab} from "./style.jsx";
 
 export const AddMeterDrawer = () => {
@@ -61,9 +61,9 @@ export const AddMeterDrawer = () => {
             worker.onmessage = (e) => {
                 if (e.data === "YAY") {
                     setIsProcessing(false);
-                    worker.terminate(); // ✅ Cleanup worker after completion
+                    worker.terminate(); // cleanup worker after completion
                 } else {
-                    addMeterReading(e.data); // ✅ Process batch data
+                    addMeterReading(e.data); // process batch data
                 }
             };
 

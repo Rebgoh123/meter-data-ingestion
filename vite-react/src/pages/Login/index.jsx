@@ -33,8 +33,6 @@ export const Login = () => {
     }, []);
 
     const handleTabChange = (event, newValue) => {
-        console.log(newValue)
-        setTab(newValue);
         setFormDetails({
             username: '',
             password: '',
@@ -50,7 +48,7 @@ export const Login = () => {
     const handleSignup = (event) => {
         event.preventDefault();
 
-        //sanity check
+        // sanity check
         if(formDetails.confirmPassword !== formDetails.password){
             setSnackBar({
                 open: true,
@@ -74,7 +72,6 @@ export const Login = () => {
 
     useEffect(() => {
         if(register.isSuccess){
-            console.log('??')
             setTab(0);
             setFormDetails({
                 username: '',
