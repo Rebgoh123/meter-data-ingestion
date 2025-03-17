@@ -12,7 +12,21 @@ A boilerplate for a simple authentication system using Express.js for the backen
 - **Frontend**: Built with Vite and React for a fast and modern user interface.
 
 ## Installation
+### Backend (Express.js)
+```sh
+cd express-js
+npm install
+npm run start
+```
+### Frontend (React + Vite)
+```sh
+cd vite-react
+npm install
+npm run dev
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Rebgoh123/simple-auth-vite-express.git my-auth
+## Usage
+Once both servers are running:
+
+Open the frontend at http://localhost:5173 (default Vite port).
+ps: default usernme and password is root
