@@ -1,6 +1,6 @@
-# Simple Auth Vite Express
+# Meter-data-ingestion
 
-A boilerplate for a simple authentication system using Express.js for the backend and Vite with React for the frontend.
+A full-stack application built with **Express.js** for the backend and **Vite + React** for the frontend.
 
 ## Prerequisites
 
