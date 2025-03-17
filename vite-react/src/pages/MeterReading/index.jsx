@@ -12,7 +12,6 @@ import dayjs from "dayjs";
 import {DataGridPaper, DrawerBox, StyledBox, StyledFab} from "./style.jsx";
 
 export const MeterReadingPage = () => {
-
     const { meterReadings, isLoading, addMeterReading, isPosting } = useMeterReadings();
     const [isProcessing, setIsProcessing] = useState(false)
     const [paginationModel, setPaginationModel] = useState({
@@ -83,7 +82,12 @@ export const MeterReadingPage = () => {
             worker.postMessage({ lines });
 
             worker.onmessage = (e) => {
-                addMeterReading(e.data); // ✅ Add processed meter readings
+                if (e.data === "YAY") {
+                    setIsProcessing(false);
+                    worker.terminate(); // ✅ Cleanup worker after completion
+                } else {
+                    addMeterReading(e.data); // ✅ Process batch data
+                }
             };
 
             worker.onerror = (err) => {
@@ -92,12 +96,6 @@ export const MeterReadingPage = () => {
                 setIsProcessing(false);
                 worker.terminate();
             };
-
-            worker.onmessageend = () => {
-                setIsProcessing(false);
-                worker.terminate(); // ✅ Cleanup worker
-            };
-
         };
     };
 

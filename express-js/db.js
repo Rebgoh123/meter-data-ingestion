@@ -1,66 +1,49 @@
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
+const crypto = require("crypto");
 
-var mysql = require('mysql2');
-var crypto = require('crypto');
+// ✅ Define SQLite Database File Path
+const dbPath = path.join(__dirname, "database.sqlite");
 
-// MySQL connection settings
-var dbConfig = {
-  host: '127.0.0.1',
-  user: 'root',
-  password: 'root',
-  database: 'express',
-};
-
-// Create connection
-var db = mysql.createConnection(dbConfig);
-
-// Connect to database
-db.connect(function(err) {
+// ✅ Create Database Connection
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('error connecting:', err);
+    console.error("❌ Error connecting to SQLite:", err.message);
     return;
   }
-  console.log('connected as id ' + db.threadId);
+  console.log("✅ Connected to SQLite database.");
 });
 
-// Create database schema
-// Create User table
-db.query(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255) UNIQUE,
-    hashed_password BLOB,
-    salt BLOB
-  );
-`, function(err, results, fields) {
-  if (err) {
-    console.error('error creating users table:', err);
-  }
-});
-// Create MeterReading table
-db.query(`
-  CREATE TABLE IF NOT EXISTS meter_readings (
-        id CHAR(36) DEFAULT (UUID()) NOT NULL,
-        nmi varchar(10) NOT NULL,
-        timestamp TIMESTAMP NULL NULL,
-        consumption DECIMAL(10,5) NOT NULL,
-        PRIMARY KEY (id),
-        UNIQUE KEY meter_readings_unique (nmi, timestamp)
-  );
-`, function(err, results, fields) {
-  if (err) {
-    console.error('error creating meter_readings table:', err);
-  }
-});
+// ✅ Create Users Table
+db.serialize(() => {
+  db.run(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            hashed_password BLOB NOT NULL,
+            salt BLOB NOT NULL
+        )
+    `);
 
-// Create an initial user (username: root, password: root)
-var salt = crypto.randomBytes(16);
-var hashedPassword = crypto.pbkdf2Sync('root', salt, 310000, 32, 'sha256');
-db.query('INSERT IGNORE INTO users (`username`, `hashed_password`, `salt`) VALUES (?, ?, ?)',
-    ['root', hashedPassword, salt],
-    function(err, results, fields) {
-      if (err) {
-        console.error('error inserting user:', err);
-      }
-    });
+  // ✅ Create Meter Readings Table
+  db.run(`
+        CREATE TABLE IF NOT EXISTS meter_readings (
+            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            nmi TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            consumption REAL NOT NULL,
+            UNIQUE (nmi, timestamp)
+        )
+    `);
+
+  // ✅ Insert Initial User (username: root, password: root)
+  const salt = crypto.randomBytes(16);
+  const hashedPassword = crypto.pbkdf2Sync("root", salt, 310000, 32, "sha256");
+
+  db.run(
+      "INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)",
+      ["root", hashedPassword, salt]
+  );
+});
 
 module.exports = db;

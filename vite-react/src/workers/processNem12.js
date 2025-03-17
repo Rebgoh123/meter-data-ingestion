@@ -39,4 +39,6 @@ self.onmessage = function (e) {
     if (parsedRows.length > 0) {
         self.postMessage(parsedRows);
     }
+
+    self.postMessage("YAY");
 };

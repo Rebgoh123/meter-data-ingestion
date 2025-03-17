@@ -16,10 +16,10 @@ export const StyledBox = styled(Box)(() => ({
 export const DataGridPaper = styled(Paper)(() => ({
     width: '100%',
     height: 'calc(100vh - 220px)',
-    p: 2
+    padding: '10px'
 }));
 
 export const DrawerBox = styled(Box)(() => ({
     width: 400,
-    p: 3
+    padding: '30px'
 }));

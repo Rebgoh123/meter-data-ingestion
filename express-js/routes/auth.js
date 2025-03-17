@@ -21,7 +21,7 @@ passport.use(new LocalStrategy({
       passwordField: 'password'
     },
     function verify(username, password, cb) {
-      db.query('SELECT * FROM users WHERE username = ?', [username],
+      db.all('SELECT * FROM users WHERE username = ?', [username],
           function(err, rows) {
             if (err) {
               return cb(err);
@@ -156,25 +156,25 @@ router.post('/signup', function(req, res, next) {
     // Hash the password synchronously
     var hashedPassword = crypto.pbkdf2Sync(req.body.password, salt, 310000, 32, 'sha256');
 
-    // Insert the new user into the database
-    db.query('INSERT IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)', [
-        req.body.username,
-        hashedPassword,
-        salt
-    ], function(err, result) {
+    // Insert new user into SQLite database
+    const sql = `
+        INSERT OR IGNORE INTO users (username, hashed_password, salt) VALUES (?, ?, ?)
+    `;
+
+    db.run(sql, [req.body.username, hashedPassword, salt], function (err) {
         if (err) {
-            console.error('error inserting user:', err);
+            console.error("Error inserting user:", err);
             return next(err); // Handle any errors during the query
         }
 
         // Respond with success message
         res.json({
             success: true,
-            message: 'Created successfully',
+            message: "Created successfully",
             result: {
-                id: result.insertId, // Correctly retrieve the last inserted ID
+                id: this.lastID,
                 user: req.body.username,
-            }
+            },
         });
     });
 });

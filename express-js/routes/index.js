@@ -13,7 +13,7 @@ const validateSessionKey = (req, res, next) => {
 
 
 function fetchMeterReading(req, res, next) {
-  db.query('SELECT * FROM meter_readings', [
+  db.all('SELECT * FROM meter_readings', [
 
   ], function(err, rows) {
     if (err) { return next(err); }
@@ -47,32 +47,28 @@ router.get('/meter-readings', fetchMeterReading,
 );
 
 router.post('/meter-readings', function(req, res, next) {
-  const meterReadings = req.body; // Expecting an array of readings
+  const meterReadings = req.body; //an array
 
   if (!Array.isArray(meterReadings) || meterReadings.length === 0) {
     return res.status(400).json({ error: "Invalid input: Must be an array of readings." });
   }
 
-  // Prepare values for bulk insert
-  const values = meterReadings.map(reading => [reading.nmi, reading.timestamp, reading.consumption]);
+  const stmt = db.prepare(`
+      INSERT OR IGNORE INTO meter_readings (nmi, timestamp, consumption) VALUES (?, ?, ?)
+  `);
 
-  // SQL query for bulk insert
-  const sql = `
-        INSERT IGNORE INTO meter_readings (nmi, timestamp, consumption)
-        VALUES ?
-    `;
+  db.serialize(() => {
+    meterReadings.forEach(({ nmi, timestamp, consumption }) => {
+      stmt.run(nmi, timestamp, consumption);
+    });
 
-  // Execute bulk insert
-  db.query(sql, [values], function(err, result) {
-    if (err) {
-      console.error('Error inserting meter readings:', err);
-      return next(err);
-    }
+    stmt.finalize();
     res.json({
       success: true,
-      message: 'Meter readings inserted successfully',
-      insertedRows: result.affectedRows
+      message: "Meter readings inserted successfully",
+      insertedRows: meterReadings.length
     });
   });
 });
+
 module.exports = router;
